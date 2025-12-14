@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Japanese Word Listening Quiz</title>
+  <style>
+    body {
+      font-family: "Hiragino Kaku Gothic Pro", "Meiryo", sans-serif;
+      display:flex;flex-direction:column;align-items:center;padding:40px;
+      color:#333;text-align:center;background:transparent;
+    }
+    h1{color:#b23b3b;font-size:2em;margin-bottom:20px;}
+    button{font-size:18px;padding:12px 24px;margin:10px;border-radius:12px;cursor:pointer;transition:.3s}
+    #playSound{background:#fff;color:#b23b3b;border:3px solid #b23b3b}
+    #playSound:hover{background:#ffe6f2}
+    .choice{background:#b23b3b;color:#fff;border:2px solid #b23b3b;padding:10px 18px;margin:6px;border-radius:10px}
+    .choice:hover{background:#ff4da6}
+    #choices{display:flex;flex-wrap:wrap;justify-content:center;max-width:720px}
+    #result{font-size:20px;margin-top:18px;font-weight:600}
+    .meta{font-size:0.9rem;color:#666;margin-top:8px}
+  </style>
+</head>
+<body>
+  <h1>🎧 Japanese Word Listening Quiz</h1>
+  <button id="playSound">▶️ Play Sound</button>
+  <div id="choices"></div>
+  <div id="result"></div>
+  <div class="meta">Click Play Sound, then choose the correct hiragana form.</div>
+
+  <!-- AUDIO ELEMENTS -->
+  <!-- は / ひ / ふ -->
+  <audio id="hikui" src="audio/hikui.mp3"></audio>
+  <audio id="hiku" src="audio/hiku.mp3"></audio>
+  <audio id="haha" src="audio/haha.mp3"></audio>
+  <audio id="hana_flower" src="audio/hana_flower.mp3"></audio>
+  <audio id="hana_nose" src="audio/hana_nose.mp3"></audio>
+  <audio id="hanasu" src="audio/hanasu.mp3"></audio>
+  <audio id="hanashibanashi" src="audio/hanashibanashi.mp3"></audio>
+  <audio id="haiku" src="audio/haiku.mp3"></audio>
+  <audio id="hito" src="audio/hito.mp3"></audio>
+  <audio id="hitotsu" src="audio/hitotsu.mp3"></audio>
+
+  <!-- へ -->
+  <audio id="kahihi" src="audio/kahi.mp3"></audio>
+  <audio id="heikin" src="audio/heikin.mp3"></audio>
+  <audio id="henka" src="audio/henka.mp3"></audio>
+  <audio id="henna" src="audio/henna.mp3"></audio>
+
+  <!-- ふ -->
+  <audio id="fukai" src="audio/fukai.mp3"></audio>
+  <audio id="fuan" src="audio/fuan.mp3"></audio>
+  <audio id="futoi" src="audio/futoi.mp3"></audio>
+  <audio id="futon" src="audio/futon.mp3"></audio>
+  <audio id="fudan" src="audio/fudan.mp3"></audio>
+  <audio id="fusai" src="audio/fusai.mp3"></audio>
+  <audio id="fuku_clothes" src="audio/fuku.mp3"></audio>
+
+  <!-- ば -->
+  <audio id="bakufu" src="audio/bakufu.mp3"></audio>
+  <audio id="buta" src="audio/buta.mp3"></audio>
+  <audio id="bubun" src="audio/bubun.mp3"></audio>
+  <audio id="bushi" src="audio/bushi.mp3"></audio>
+  <audio id="baka" src="audio/baka.mp3"></audio>
+  <audio id="banchi" src="audio/banchi.mp3"></audio>
+  <audio id="baiku" src="audio/baiku.mp3"></audio>
+  <audio id="banana" src="audio/banana.mp3"></audio>
+
+  <!-- ぱ -->
+  <audio id="pan" src="audio/pan.mp3"></audio>
+  <audio id="pink" src="audio/pink.mp3"></audio>
+  <audio id="pocket" src="audio/pocket.mp3"></audio>
+  <audio id="poko_poko" src="audio/pokopoko.mp3"></audio>
+
+  <!-- ほ / ぼ -->
+  <audio id="hoshii" src="audio/hoshii.mp3"></audio>
+  <audio id="hosoi" src="audio/hosoi.mp3"></audio>
+  <audio id="honki" src="audio/honki.mp3"></audio>
+  <audio id="hotondo" src="audio/hotondo.mp3"></audio>
+  <audio id="hotchkiss" src="audio/hotchkiss.mp3"></audio>
+  <audio id="botan" src="audio/botan.mp3"></audio>
+  <audio id="boku" src="audio/boku.mp3"></audio>
+  <audio id="bonsai" src="audio/bonsai.mp3"></audio>
+
+  <!-- others -->
+  <audio id="obasan" src="audio/obasan.mp3"></audio>
+  <audio id="obaasan" src="audio/obaasan.mp3"></audio>
+  <audio id="bin" src="audio/bin.mp3"></audio>
+  <audio id="obi" src="audio/obi.mp3"></audio>
+  <audio id="hinshitsu" src="audio/hinshitsu.mp3"></audio>
+  <audio id="bungaku" src="audio/bungaku.mp3"></audio>
+  <audio id="bunseki" src="audio/bunseki.mp3"></audio>
+  <audio id="bunka" src="audio/bunka.mp3"></audio>
+  <audio id="buin" src="audio/buin.mp3"></audio>
+  <audio id="bengoshi" src="audio/bengoshi.mp3"></audio>
+  <audio id="beikoku" src="audio/beikoku.mp3"></audio>
+  <audio id="betsubetsu" src="audio/betsubetsu.mp3"></audio>
+  <audio id="beki" src="audio/beki.mp3"></audio>
+  <audio id="kabe" src="audio/kabe.mp3"></audio>
+  <audio id="besshi" src="audio/besshi.mp3"></audio>
+
+<script>
+let currentQuestion = null;
+let questionCount = 0;
+let score = 0;
+const maxQuestions = 50;
+
+const quizQuestions = [
+  /* は / ひ / ふ */
+  { q:"hikui", options:["ひくい","ひく","ひろい","ひかい"], correct:"ひくい" },
+  { q:"hiku", options:["ひく","ひくい","ひらく","ひこ"], correct:"ひく" },
+  { q:"haha", options:["はは","はな","はば","はほ"], correct:"はは" },
+  { q:"hana_flower", options:["はな","はは","はね","はなす"], correct:"はな" },
+  { q:"hana_nose", options:["はな","はなす","はね","はは"], correct:"はな" },
+  { q:"hanasu", options:["はなす","はなし","はな","はなさ"], correct:"はなす" },
+  { q:"hanashibanashi", options:["はなしばなし","はなす","はなし","はなばなし"], correct:"はなしばなし" },
+  { q:"haiku", options:["はいく","はく","はいう","はいこ"], correct:"はいく" },
+  { q:"hito", options:["ひと","ひつ","ひこ","ひど"], correct:"ひと" },
+  { q:"hitotsu", options:["ひとつ","ひと","ひとり","ひつ"], correct:"ひとつ" },
+
+  /* へ */
+  { q:"kahi", options:["かひひ","かひ","かび","かぴ"], correct:"かひ" },
+  { q:"heikin", options:["へいきん","へきん","へいこん","へいぎん"], correct:"へいきん" },
+  { q:"henka", options:["へんか","へんが","へんた","へんだ"], correct:"へんか" },
+  { q:"henna", options:["へんな","へんら","へんだ","へんば"], correct:"へんな" },
+
+  /* ふ */
+  { q:"fukai", options:["ふかい","ふか","ふがい","ふけい"], correct:"ふかい" },
+  { q:"fuan", options:["ふあん","ふなん","ふわん","ふばん"], correct:"ふあん" },
+  { q:"futoi", options:["ふとい","ふと","ふどう","ふたい"], correct:"ふとい" },
+  { q:"futon", options:["ふとん","ふどう","ふと","ふほん"], correct:"ふとん" },
+  { q:"fudan", options:["ふだん","ふたん","ふばん","ふなん"], correct:"ふだん" },
+  { q:"fusai", options:["ふさい","ふざい","ふさいー","ふざいー"], correct:"ふさい" },
+  { q:"fuku", options:["ふく","ふぐ","ふう","ふこ"], correct:"ふく" },
+
+  /* ば */
+  { q:"bakufu", options:["ばくふ","はくふ","ぱくふ","ばくぶ"], correct:"ばくふ" },
+  { q:"buta", options:["ぶた","ふた","ぷた","ぶだ"], correct:"ぶた" },
+  { q:"bubun", options:["ぶぶん","ふぶん","ぶぷん","ぶぶ"], correct:"ぶぶん" },
+  { q:"bushi", options:["ぶし","ふし","ぶじ","ぶち"], correct:"ぶし" },
+  { q:"baka", options:["ばか","ぱか","はか","ばが"], correct:"ばか" },
+  { q:"banchi", options:["ばんち","ぱんち","はんち","ばんじ"], correct:"ばんち" },
+  { q:"baiku", options:["ばいく","ぱいく","はいく","ばいぐ"], correct:"ばいく" },
+  { q:"banana", options:["ばなな","ぱなな","はなな","ばな"], correct:"ばなな" },
+
+  /* ぱ */
+  { q:"pan", options:["ぱん","はん","ばん","ぱんー"], correct:"ぱん" },
+  { q:"pinku", options:["ぴんく","びんく","ひんく","ぴんぐ"], correct:"ぴんく" },
+  { q:"pocket", options:["ぽけっと","ぼけっと","ほけっと","ぽげっと"], correct:"ぽけっと" },
+  { q:"poko_poko", options:["ぽこぽこ","ぼこぼこ","ほこほこ","ぽこぼこ"], correct:"ぽこぽこ" },
+
+  /* ほ / ぼ */
+  { q:"hoshii", options:["ほしい","ほし","ぼしい","ほじい"], correct:"ほしい" },
+  { q:"hosoi", options:["ほそい","ほぞい","ほそ","ほたい"], correct:"ほそい" },
+  { q:"honki", options:["ほんき","ぼんき","ほんぎ","ほんち"], correct:"ほんき" },
+  { q:"hotondo", options:["ほとんど","ほとんと","ぼとんど","ほどんど"], correct:"ほとんど" },
+  { q:"hotchkisu", options:["ほっちきす","ほちきす","ぼっちきす","ほっちぎす"], correct:"ほっちきす" },
+  { q:"botan", options:["ぼたん","ほたん","ぼだん","ぼた"], correct:"ぼたん" },
+  { q:"boku", options:["ぼく","ほく","ぼぐ","ぽく"], correct:"ぼく" },
+  { q:"bonsai", options:["ぼんさい","ほんさい","ぼんざい","ぼんさいー"], correct:"ぼんさい" },
+
+  /* others */
+  { q:"obasan", options:["おばさん","おばあさん","おば","おばさ"], correct:"おばさん" },
+  { q:"obaasan", options:["おばあさん","おばさん","おば","おばあ"], correct:"おばあさん" },
+  { q:"bin", options:["びん","ひん","ぴん","びぬ"], correct:"びん" },
+  { q:"obi", options:["おび","おひ","おびー","おびん"], correct:"おび" },
+  { q:"hinshitsu", options:["ひんしつ","ひんじつ","びんしつ","ひんし"], correct:"ひんしつ" },
+  { q:"bungaku", options:["ぶんがく","ふんがく","ぶんかく","ぶんが"], correct:"ぶんがく" },
+  { q:"bunseki", options:["ぶんせき","ふんせき","ぶんぜき","ぶんしき"], correct:"ぶんせき" },
+  { q:"bunka", options:["ぶんか","ふんか","ぶんが","ぶんた"], correct:"ぶんか" },
+  { q:"buin", options:["ぶいん","ふいん","ぶん","ぶい"], correct:"ぶいん" },
+  { q:"bengoshi", options:["べんごし","へんごし","べんこし","べんぞし"], correct:"べんごし" },
+  { q:"beikoku", options:["べいこく","へいこく","べいごく","べいこ"], correct:"べいこく" },
+  { q:"betsubetsu", options:["べつべつ","へつへつ","べつべち","べつべ"], correct:"べつべつ" },
+  { q:"beki", options:["べき","へき","ぺき","べぎ"], correct:"べき" },
+  { q:"kabe", options:["かべ","かへ","かぺ","かめ"], correct:"かべ" },
+  { q:"besshi", options:["べっし","へっし","べっち","べし"], correct:"べっし" }
+];
+
+function newQuestion() {
+  if (questionCount >= maxQuestions) {
+    alert(`Quiz finished! Your score: ${score} / ${maxQuestions}`);
+    questionCount = 0;
+    score = 0;
+  }
+
+  questionCount++;
+  currentQuestion = quizQuestions[Math.floor(Math.random() * quizQuestions.length)];
+
+  const choicesDiv = document.getElementById("choices");
+  choicesDiv.innerHTML = "";
+
+  currentQuestion.options
+    .sort(() => 0.5 - Math.random())
+    .forEach(option => {
+      const btn = document.createElement("button");
+      btn.className = "choice";
+      btn.textContent = option;
+      btn.onclick = () => checkAnswer(option);
+      choicesDiv.appendChild(btn);
+    });
+
+  document.getElementById("result").textContent =
+    `Q ${questionCount} / ${maxQuestions}`;
+}
+
+function playCurrentSound() {
+  if (!currentQuestion) return;
+  const audio = document.getElementById(currentQuestion.q);
+  if (audio) {
+    audio.currentTime = 0;
+    audio.play();
+  }
+}
+
+function checkAnswer(answer) {
+  const result = document.getElementById("result");
+
+  if (answer === currentQuestion.correct) {
+    score++;
+    result.textContent = `✅ Correct! (${questionCount}/${maxQuestions})`;
+    result.style.color = "#28a745";
+  } else {
+    result.textContent = `❌ Wrong — correct: ${currentQuestion.correct} (${questionCount}/${maxQuestions})`;
+    result.style.color = "#d63384";
+  }
+
+  setTimeout(newQuestion, 1000);
+}
+
+document.getElementById("playSound").addEventListener("click", playCurrentSound);
+
+// first question
+newQuestion();
+</script>
+</body>
+</html>
